@@ -1,4 +1,5 @@
 import { TouchableOpacity,Text,StyleSheet } from "react-native"
+import Collors from '../components/collors.json'
 
 export default function ButtonComponent ({funcion,title}){
 return(
@@ -19,7 +20,7 @@ const style = StyleSheet.create({
         height:35,
         borderRadius:10,
         marginTop:15,
-        backgroundColor:'#009688',
+        backgroundColor:Collors[0]['new-green'],
         justifyContent:'center',
         alignItems:'center'
       }

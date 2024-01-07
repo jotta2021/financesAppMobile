@@ -12,13 +12,13 @@ export default function Category({item,amount}){
         <View style={styles.category}>
         {
             item.icon === 'home'?
-            <FontAwesome5 name="home" size={24} color={Collors[0]['green-app']} />
+            <FontAwesome5 name="home" size={24} color={Collors[0]['new-green']} />
             :item.icon === 'utensils'?
-            <FontAwesome5 name="utensils" size={24} color={Collors[0]['green-app']} />
+            <FontAwesome5 name="utensils" size={24} color={Collors[0]['new-green']} />
             :item.icon === 'car'?
-            <FontAwesome5 name="car" size={24} color={Collors[0]['green-app']} />
+            <FontAwesome5 name="car" size={24} color={Collors[0]['new-green']} />
             :item.icon === 'heartbeat'?
-            <FontAwesome5 name="heartbeat" size={24} color={Collors[0]['green-app']} />
+            <FontAwesome5 name="heartbeat" size={24} color={Collors[0]['new-green']} />
             :null
         }
         <Text>{item.title}</Text>

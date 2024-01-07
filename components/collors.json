@@ -3,6 +3,8 @@
       "green-app": "#009688",
       "yellow-app": "#F9EA64",
       "orange-app": "#FF4C18",
-      "grey-app": "#5F5F5F"
+      "grey-app": "#5F5F5F",
+      "new-green":"#029d60",
+      "green_claro":"#0fd15d"
     }
   ]
