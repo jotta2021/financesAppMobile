@@ -4,36 +4,41 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, collection, setDoc, getDoc } from "firebase/firestore";
+import { doc, collection, setDoc, getDoc, getDocs, where, orderBy, query } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "toastify-react-native";
 import { useNavigation } from "@react-navigation/native";
+
+
 export const AuthContext = createContext({});
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState("");
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const [itemSelected, setItemSelected] = useState([])
 
   useEffect(() => {
     async function verifyUser() {
-      const user = await AsyncStorage.getItem("user");
-      
-      if (user) {
-        setUser(JSON.parse(user));
-        console.log('Dados recuperados  do Storage')
-        console.log(user);
-      }
       try {
+        const userData = await AsyncStorage.getItem("user");
 
-        navigation.navigate("home");
-      } catch {
-        console.log("Erro ao te enviar pra home");
+        if (userData) {
+          const { email, password } = JSON.parse(userData);
+          await singUp(email, password);
+          console.log('Login automático realizado com sucesso:', email, password);
+          navigation.navigate('home')
+        } else {
+          console.log('Nenhum dado de usuário encontrado no AsyncStorage.');
+        }
+      } catch (error) {
+        console.error('Erro ao verificar usuário no AsyncStorage:', error);
       }
     }
 
     verifyUser();
   }, []);
+
 
   //função para realizar o cadastro do usuario e salvar os dados no storage
   function singIn(name, email, password) {
@@ -56,6 +61,7 @@ function AuthProvider({ children }) {
             email: email,
             uid: uid,
             saldo: 0,
+            password: password
           };
 
           await AsyncStorage.setItem("user", JSON.stringify(saveUser));
@@ -88,11 +94,18 @@ function AuthProvider({ children }) {
           saldo: docSnap.data().saldo || 0,
           name: docSnap.data().name || "",
           email: docSnap.data().email || "",
+
           // adicione outros dados do usuário aqui
+        };
+        const saveUser = {
+          email: email,
+          password: password
         };
         console.log(data);
         setUser(data);
         setLoading(false);
+        await AsyncStorage.setItem("user", JSON.stringify(saveUser));
+
         Toast.success("Bem vindo de volta");
         navigation.navigate("home");
       } else {
@@ -109,10 +122,63 @@ function AuthProvider({ children }) {
       setLoading(false);
     }
   }
+  //função pra buscar as poupoancas 
+  const [poupances, setPoupances] = useState([])
 
+  /**if (user) {
+    const userUid = user.uid;
+    const incomesQuery = query(refDocIncomes, where("user", "==", userUid), orderBy("createdAt", "desc"));
+    const incomesSnapshot = await getDocs(incomesQuery);
+    const incomeData = incomesSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      amount: doc.data().amount,
+      created: doc.data().createdAt,
+      title: doc.data().title,
+      type: doc.data().type,
+      userUid: userUid,
+    })); */
+  //função para buscar as poupanças existentes
+  async function LoadPoupance() {
+    const refDoc = collection(db, "poupance");
+    setLoading(true)
+    if (user) {
+
+      const userUid = user.uid;
+
+      try {
+        const Query = query(refDoc, where("user", "==", userUid), orderBy("created", "desc"));
+        const snapshot = await getDocs(Query);
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          created: doc.data().created,
+          title: doc.data().title,
+          total_value: doc.data().total_value,
+          userUid: doc.data().user,
+          value: doc.data().value
+
+        }))
+        console.log(data)
+        setPoupances(data)
+        setLoading(false)
+      }
+      catch (error) {
+        console.log('Erro ao buscar dados')
+        Toast.show({
+          type: 'error',
+          text1: 'Ocorreu um erro',
+          text2: error
+        })
+        setLoading(false)
+
+
+
+      }
+
+    }
+  }
   return (
     <AuthContext.Provider
-      value={{ singIn, loading, setLoading, signed: !!user, user, singUp ,setUser}}
+      value={{ singIn, loading, setLoading, signed: !!user, user, singUp, setUser, itemSelected, setItemSelected, LoadPoupance, poupances, setPoupances }}
     >
       {children}
     </AuthContext.Provider>

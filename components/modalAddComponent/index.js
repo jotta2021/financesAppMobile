@@ -1,95 +1,105 @@
-import React ,{useState,useContext}from 'react';
-import { View,Text,StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Alert } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Alert } from 'react-native';
 import Collors from './../collors.json'
 import Icon from 'react-native-vector-icons/AntDesign'
-import {AuthContext} from '../../src/context/contexts'
-import ToastManager,{ Toast } from 'toastify-react-native';
-import {doc,setDoc,collection, addDoc} from 'firebase/firestore'
-import {db} from '../../services/firebaseConfig'
+import { AuthContext } from '../../src/context/contexts'
 
+import { doc, setDoc, collection, addDoc } from 'firebase/firestore'
+import { db } from '../../services/firebaseConfig'
+import MaskInput, { createNumberMask } from 'react-native-mask-input';
+import LottieView from 'lottie-react-native';
+import Ok from '../../assets/ok.json'
+import Toast from "react-native-toast-message";
+import { Button } from '@rneui/themed';
 // import { Container } from './styles';
 
-export default function ModalAdd({CloseModal,updateRefresh}){
-const[selectedType,setSelectedType] = useState('')
-const [selectedCategory,setSelectedCategory] = useState('')
-const [amount,setAmount] = useState('')
-const [desc,setDesc] = useState('')
-const {user} = useContext(AuthContext)
+export default function ModalAdd({ CloseModal, updateRefresh, setIndex }) {
+  const [selectedType, setSelectedType] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [amount, setAmount] = useState('')
 
-function handleTypeIncome(){
-    
+  //const pra controlar o estado de carregamento da função
+  const [loading, setLoading] = useState(false)
+  const [desc, setDesc] = useState('')
+  const { user } = useContext(AuthContext)
+
+  function handleTypeIncome() {
+
     setSelectedType('income')
-    console.log(selectedType)
-}
 
-function handleTypeExpense(){
+  }
+
+  function handleTypeExpense() {
     setSelectedType('expense')
-    console.log(selectedType)
-}
 
-function handleCategory(value){
-   setSelectedCategory(value)
-   console.log(value)
-}
+  }
+
+  function handleCategory(value) {
+    setSelectedCategory(value)
+
+  }
 
 
-//formata o input para um formato monetario
-const formatCurrency = (value) => {
-    // Remove caracteres não numéricos
-    const numericValue = value.replace(/[^0-9]/g, '');
+  //formata o input para um formato monetario
 
-    // Formata o valor para o formato de moeda (por exemplo, R$ 1.000,00)
-    let formattedValue = (parseInt(numericValue) / 100).toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
 
-    return formattedValue;
-  };
 
-  const handleInputChange = (text) => {
-    const formattedAmount = formatCurrency(text);
-    setAmount(formattedAmount);
-  };
+
 
 
   //função para remover a formatação monetraria antes de enviar pro banco de dados 
 
 
- 
-    
 
 
-//função para adicionar gastos ou receitas
+
+  //função para adicionar gastos ou receitas
+  ///e enviar pro banco de dados
   async function handleAddAmount() {
- const unformatedAmount = amount.replace(/[^\d,.]/g, '').replace(',', '.');
- const format = parseFloat(unformatedAmount)
- console.log(format)
+    setLoading(true)
+    setIndex(1)
+    const unformatedAmount = amount.replace(/[^\d,]/g, ''); // Remove tudo exceto números e vírgulas
+    const format = parseFloat(unformatedAmount.replace(',', '.')); // Substitui a vírgula por ponto e converte para float
+
 
     try {
       if (selectedType === 'income') {
         const newIncome = {
-          title: selectedCategory,
+          title: desc.toUpperCase(),
           amount: format,
           type: selectedType,
           createdAt: new Date(),
           user: user.uid
         };
-  
-        console.log(newIncome);
-        try{
+
+        console.log('nono', newIncome);
+        try {
           await addDoc(collection(db, 'incomes'), newIncome);
-          
+
           updateRefresh()
-          Alert.alert(`${selectedType} Adicionado com sucesso`)
-       
-        await CloseModal();
+          setTimeout(() => {
+            setIndex(2)
+            setLoading(false)
+            CloseModal()
+            setAmount('')
+            setDesc('')
+
+          }, 3000)
+
+
+
         }
-        catch(error){
+        catch (error) {
           console.log(error)
-          Alert.alert('Erro na solicitação',error)
+          Toast.show({
+            type: 'error',
+            text1: 'Erro na solicitação',
+            text2: error
+          })
+
+          setLoading(false)
         }
-        
+
       } else {
         const newExpense = {
           title: selectedCategory,
@@ -98,200 +108,254 @@ const formatCurrency = (value) => {
           createdAt: new Date(),
           user: user.uid
         };
-  
+
         console.log(newExpense);
-        await addDoc(collection(db, 'expenses'), newExpense); 
+        await addDoc(collection(db, 'expenses'), newExpense);
         updateRefresh()
-        Alert.alert(`${selectedType} cadastrada com sucesso`);
-       
-        
-        CloseModal();
+
+
+
+        setTimeout(() => {
+          setIndex(2)
+          setLoading(false)
+          CloseModal()
+          setAmount('')
+          setDesc('')
+        }, 3000)
+
+
       }
     } catch (error) {
-      Toast.error('Erro ao cadastrar');
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao cadastrar'
+      })
       console.log(error);
+      setLoading(false)
     }
   }
-  
-    return(
-         <KeyboardAvoidingView behavior='padding'>
-            <ToastManager/>
-            <View style={styles.modal}>
-                <Icon
-                onPress={CloseModal}
-                style={{position:'absolute',right:0  ,marginTop:-15}} name='closecircle' size={30} color='red'/>
-                <Text style={styles.title}>Adicionar Receita ou Despesa</Text>
-                <Text style={{marginBottom:10}}>Selecione o tipo:</Text>
-                <View style={{flexDirection:'row',gap:20}}>
-                   <TouchableOpacity 
-                   onPress={handleTypeIncome}
-                   style={selectedType === 'income' ? styles.buttonincomePress: styles.buttonincome}
-                   >
-                    <Text style={{color:'white',textAlign:'center'}}>Receita</Text>
-                </TouchableOpacity>  
-                <TouchableOpacity
-                onPress={handleTypeExpense}
-                style={selectedType === 'expense' ? styles.buttonExpensePress: styles.buttonExpense}
-                 >
-                    <Text style={{color:'white',textAlign:'center'}}>Despesa</Text>
-                </TouchableOpacity> 
 
-         
+  const dollarMask = createNumberMask({
+    prefix: ['R', '$', ' '],
+    delimiter: '.',
+    separator: ',',
+    precision: 2,
+  })
+  return (
+    <KeyboardAvoidingView behavior='padding' style={{ alignItems: 'center' }}  >
+
+      {loading ?
+        <View >
+
+          <LottieView
+            source={Ok}
+
+            loop
+            autoPlay={true}
+            style={{ width: 120, height: 120, marginTop: 10 }}
+
+          />
+        </View>
+        :
+
+
+        <View style={styles.modal}>
+
+          <Text style={styles.title}>Adicionar Receita ou Despesa</Text>
+          <Text style={{ marginBottom: 10, fontSize: 18 }}>Selecione o tipo:</Text>
+          <View style={{ flexDirection: 'row', gap: 20 }}>
+            <TouchableOpacity
+              onPress={handleTypeIncome}
+              style={selectedType === 'income' ? styles.buttonincomePress : styles.buttonincome}
+            >
+              <Text style={{ color: 'white', textAlign: 'center' }}>Receita</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleTypeExpense}
+              style={selectedType === 'expense' ? styles.buttonExpensePress : styles.buttonExpense}
+            >
+              <Text style={{ color: 'white', textAlign: 'center' }}>Despesa</Text>
+            </TouchableOpacity>
+
+
+          </View>
+
+          {
+
+            selectedType === 'expense' ? (
+              <View>
+
+                <Text style={{ marginTop: 5, marginBottom: 10, textAlign: 'center' }}>Qual a categoria?</Text>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity
+
+
+                    onPress={() => handleCategory('Moradia')}
+                    style={selectedCategory === 'Moradia' ? styles.buttonCategoryPress : styles.buttonCategory}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>Moradia</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleCategory('Alimentação')}
+                    style={selectedCategory === 'Alimentação' ? styles.buttonCategoryPress : styles.buttonCategory}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>Alimentação</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleCategory('Saúde')}
+                    style={selectedCategory === 'Saúde' ? styles.buttonCategoryPress : styles.buttonCategory}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>Saúde</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleCategory('Transporte')}
+                    style={selectedCategory === 'Transporte' ? styles.buttonCategoryPress : styles.buttonCategory}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>Transporte</Text>
+                  </TouchableOpacity>
+
                 </View>
 
-{
-
-  selectedType === 'expense' ? (
-    <View>
-
-<Text style={{marginTop:5,marginBottom:10,textAlign:'center'}}>Qual a categoria?</Text> 
-                      <View style={{flexDirection:'row',gap:10}}>
-                   <TouchableOpacity 
-        
-                 
-                  onPress={()=> handleCategory('Moradia')}
-                  style={selectedCategory === 'Moradia'?  styles.buttonCategoryPress: styles.buttonCategory}
-                   >
-                    <Text style={{color:'white',textAlign:'center'}}>Moradia</Text>
-                </TouchableOpacity>  
-                <TouchableOpacity
-                onPress={()=> handleCategory('Alimentação')}
-                style={selectedCategory === 'Alimentação'? styles.buttonCategoryPress : styles.buttonCategory}
-                 >
-                    <Text style={{color:'white',textAlign:'center'}}>Alimentação</Text>
-                </TouchableOpacity> 
-                <TouchableOpacity
-              onPress={()=> handleCategory('Saúde')}
-              style={selectedCategory === 'Saúde'? styles.buttonCategoryPress : styles.buttonCategory}
-                 >
-                    <Text style={{color:'white',textAlign:'center'}}>Saúde</Text>
-                </TouchableOpacity> 
-                <TouchableOpacity
-                  onPress={()=> handleCategory('Transporte')}
-                  style={selectedCategory === 'Transporte'? styles.buttonCategoryPress : styles.buttonCategory}
-                 >
-                    <Text style={{color:'white',textAlign:'center'}}>Transporte</Text>
-                </TouchableOpacity> 
-         
-                </View>
-
-    </View>
-  ) : (
+              </View>
+            ) : (
 
 
-    <TextInput
-    style={{marginTop:20, borderWidth:1,borderRadius:10,width:280,height:50}}
-    placeholder='Descrição... Ex: Trabalho/horas extras'
-    keyboardType='default'
-    value={desc}
-    onChangeText={(text)=> setDesc(text)}
-    
-    
-    />
+              <TextInput
+                style={{ marginTop: 20, borderWidth: 1, borderRadius: 10, width: 280, height: 50 }}
+                placeholder='Descrição... Ex: Trabalho/horas extras'
+                keyboardType='default'
+                value={desc}
+                onChangeText={(text) => setDesc(text)}
+
+
+              />
+            )
+          }
+
+
+          <Text style={{ marginTop: 10, marginBottom: 10 }}>Qual o valor?</Text>
+
+          <MaskInput
+            style={styles.input}
+            value={amount}
+            mask={dollarMask}
+            onChangeText={(masked, unmasked) => {
+              console.log(masked)
+              setAmount(masked); // you can use the masked value as well
+            }}
+          />
+
+          <View style={{ alignItems: 'center' }}>
+            <Button
+              onPress={handleAddAmount}
+              title={'Adicionar valor'}
+              buttonStyle={{ width: 300, borderRadius: 4, marginTop: 20, }}
+              color={Collors[0]['new-green']}
+            />
+          </View>
+
+        </View>
+
+      }
+
+
+
+
+    </KeyboardAvoidingView>
   )
 }
-                
-                      
-                <Text style={{marginTop:10,marginBottom:10}}>Qual o valor?</Text>
-                <TextInput
-                style={styles.input}
-                placeholder='R$ 0,00'
-                keyboardType='numeric'
-                onChangeText={handleInputChange}
-                value={amount}
-                />
-
-                <TouchableOpacity 
-                onPress={handleAddAmount}
-                style={styles.buttonAdd}>
-                    <Text style={{color:'white',fontSize:18}}>
-                        Adicionar
-                    </Text>
-                </TouchableOpacity>
-            </View>
-</KeyboardAvoidingView>
-    )
-}
 const styles = StyleSheet.create({
-modal:{
- alignItems:'center',
- marginTop:20,
- 
-  
-},
-title:{
-    fontSize:18,
-    fontWeight:'bold',
-    marginBottom:5,
-    marginTop:20
- 
-},
-buttonincome:{
+  modal: {
+    alignItems: 'center',
+    marginTop: 20,
+
+
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    marginTop: 20
+
+  },
+  buttonincome: {
     backgroundColor: '#d3d3d3',
-    width:100,
-    height:25,
-    borderRadius:8,
-    marginTop:5
-   
-},
-buttonincomePress:{
+    width: 130,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    marginTop: 5
+  },
+  buttonincomePress: {
     backgroundColor: Collors[0]['new-green'],
-    width:100,
-    height:25,
-    borderRadius:8,
-    marginTop:5
-   
-},
-buttonExpense:{
-   
-        backgroundColor: '#d3d3d3',
-        width:100,
-        height:25,
-        borderRadius:8,
-        marginTop:5
-},
-buttonExpensePress:{
+    width: 130,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    marginTop: 5
+
+  },
+  buttonExpense: {
+
+    backgroundColor: '#d3d3d3',
+    width: 130,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    marginTop: 5
+  },
+  buttonExpensePress: {
     backgroundColor: 'red',
-    width:100,
-    height:25,
-    borderRadius:8,
-    marginTop:5
-},
-buttonCategory:{
-    
+    width: 130,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    marginTop: 5
+  },
+  buttonCategory: {
+
     backgroundColor: '#d3d3d3',
-    width:70,
-    height:25,
-    borderRadius:8,
-    marginTop:5
-},
-buttonCategoryPress:{
+    width: 80,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginTop: 5,
+
+  },
+  buttonCategoryPress: {
     backgroundColor: Collors[0]['new-green'],
-    width:70,
-    height:25,
-    borderRadius:8,
-    marginTop:5
-}
-,input:{
-    width:200,
-    height:40,
-    borderColor:Collors[0]['grey-app'],
-    borderWidth:1,
-    borderRadius:8,
-    padding:10,
-    fontSize:16,
-    color:Collors[0]['grey-app'],
-    marginTop:10
-},
-buttonAdd:{
-    width:200,
-    height:40,
-    backgroundColor:Collors[0]['new-green'],
-    borderRadius:8,
-    justifyContent:'center',
-    alignItems:'center',
-    marginTop:20,
-    marginBottom:30
-}
+    width: 80,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginTop: 5
+  }
+  , input: {
+    width: 300,
+    height: 40,
+    borderColor: Collors[0]['grey-app'],
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: Collors[0]['grey-app'],
+    marginTop: 10
+  },
+  buttonAdd: {
+    width: 200,
+    height: 40,
+    backgroundColor: Collors[0]['new-green'],
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 30
+  }
 
 })

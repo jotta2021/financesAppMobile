@@ -18,7 +18,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import ButtonComponent from "../../components/ButtonComponents";
 import { AuthContext } from "../../src/context/contexts";
-import ToastManager, { Toast } from "toastify-react-native";
+import Toast from "react-native-toast-message";
 
 const Register = () => {
   const [visible, setVisible] = useState(false);
@@ -47,13 +47,16 @@ const Register = () => {
       await singIn(name, email, password); // Passando todos os dados para a função signIn
     } else {
       setLoading(false);
-      Toast.warn("Preencha os campos vazios");
+      Toast.show({
+        type: 'info',
+        text1: 'Preencha os campos vazios'
+      })
     }
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ToastManager width={200} />
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={style.container}>
           <Image source={Logo} style={style.logo} />

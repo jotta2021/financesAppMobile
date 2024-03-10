@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect ,} from "react";
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import ButtonComponent from "../../components/ButtonComponents";
 import { AuthContext } from "./../../src/context/contexts";
-import ToastManager, { Toast } from "toastify-react-native";
+import Toast from "react-native-toast-message";
 
 const Login = () => {
   const [visible, setVisible] = useState(false);
@@ -30,20 +30,24 @@ const Login = () => {
 
   function handleVisible() {
     setVisible(!visible);
-    console.log(visible);
+
   }
 
   function login() {
     if (email !== "" && password !== "") {
       singUp(email, password);
     } else {
-      Toast.warn("Preencha os campos vazios");
+      Toast.show({
+        type: 'info',
+        text1: 'Preencha os campos vazios'
+      })
     }
   }
 
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ToastManager />
+   
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={style.container}>
           <Image source={Logo} style={style.logo} />
@@ -77,7 +81,7 @@ const Login = () => {
           </View>
 
           <ButtonComponent
-            title={loading ? <ActivityIndicator  color='white'/> : "Login"}
+            title={loading ? <ActivityIndicator color='white' /> : "Login"}
             funcion={login}
           />
 
