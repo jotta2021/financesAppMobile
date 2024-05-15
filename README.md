@@ -2,7 +2,7 @@
 Com o objetivo de tornar o controle financeiro mais fácil e intuitivo, desenvolvi um aplicativo que utiliza o Firebase como banco de dados para garantir segurança e eficiência.
 
 <div>
-  <img  style='width:60' src='https://ibb.co/YQL43W1'/>
+  <img  width=100 src='https://ibb.co/YQL43W1'/>
     <img src='https://ibb.co/YQL43W1'/>
     <img src=''/>
     <img src=''/>
