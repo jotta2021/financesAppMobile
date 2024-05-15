@@ -3,7 +3,7 @@ Com o objetivo de tornar o controle financeiro mais fácil e intuitivo, desenvol
 
 <div>
   <img  style='width:60' src=''/>
-    <img href='https://ibb.co/YQL43W1'/>
+    <img src='https://ibb.co/YQL43W1'/>
     <img src=''/>
     <img src=''/>
     <img src=''/>
