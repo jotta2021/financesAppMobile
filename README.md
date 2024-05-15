@@ -1,4 +1,4 @@
-<h1>Aplicativo em construção</h1>
+<h1>App Simplifica - Finanças Pessoais</h1>
 Com o objetivo de tornar o controle financeiro mais fácil e intuitivo, desenvolvi um aplicativo que utiliza o Firebase como banco de dados para garantir segurança e eficiência.
 
 Aqui estão alguns dos recursos incríveis do aplicativo:
