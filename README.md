@@ -1,6 +1,15 @@
 <h1>App Simplifica - Finanças Pessoais</h1>
 Com o objetivo de tornar o controle financeiro mais fácil e intuitivo, desenvolvi um aplicativo que utiliza o Firebase como banco de dados para garantir segurança e eficiência.
 
+<div>
+  <img  style='width:60' src=''/>
+    <img src=''/>
+    <img src=''/>
+    <img src=''/>
+    <img src=''/>
+    <img src=''/>
+</div>
+
 Aqui estão alguns dos recursos incríveis do aplicativo:
 
 Registro de Receitas e Despesas: onde você pode registrar suas receitas e despesas mensais de forma fácil e rápida, mantendo o controle total sobre suas finanças.
@@ -15,3 +24,6 @@ Celebração de Metas: Ao atingir suas metas de economia, o aplicativo te avisa 
 
 
 Estou continuamente trabalhando em melhorias para tornar o aplicativo ainda mais poderoso e útil. Fique atento para atualizações!
+
+Tecnologias utilizadas: 
+React Native || banco de dados: Firebase
