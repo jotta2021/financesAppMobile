@@ -2,12 +2,12 @@
 Com o objetivo de tornar o controle financeiro mais fácil e intuitivo, desenvolvi um aplicativo que utiliza o Firebase como banco de dados para garantir segurança e eficiência.
 
 <div>
-  <img  src='https://i.ibb.co/02GpcX6/Whats-App-Image-2024-05-15-at-16-45-53-4.jpg' width=100/>
-    <img src='https://i.ibb.co/ZM530rB/Whats-App-Image-2024-05-15-at-16-45-53-3.jpg' width=100/>
-    <img src='https://i.ibb.co/xsgXb6z/Whats-App-Image-2024-05-15-at-16-45-53-2.jpg' width=100/>
-    <img src='https://i.ibb.co/cvMcPhj/Whats-App-Image-2024-05-15-at-16-45-53-1.jpg' width=100/>
-    <img src=' https://i.ibb.co/JxByqV1/Whats-App-Image-2024-05-15-at-16-45-53.jpg' width=100/>
-    <img src='https://i.ibb.co/RNg6YvD/04e4f19f-bf78-469f-8556-0de536ac5530.jpg' width=100/>
+  <img  src='https://i.ibb.co/02GpcX6/Whats-App-Image-2024-05-15-at-16-45-53-4.jpg' width=120/>
+    <img src='https://i.ibb.co/ZM530rB/Whats-App-Image-2024-05-15-at-16-45-53-3.jpg' width=120/>
+    <img src='https://i.ibb.co/xsgXb6z/Whats-App-Image-2024-05-15-at-16-45-53-2.jpg' width=120/>
+    <img src='https://i.ibb.co/cvMcPhj/Whats-App-Image-2024-05-15-at-16-45-53-1.jpg' width=120/>
+    <img src='https://i.ibb.co/JxByqV1/Whats-App-Image-2024-05-15-at-16-45-53.jpg' width=120/>
+    <img src='https://i.ibb.co/RNg6YvD/04e4f19f-bf78-469f-8556-0de536ac5530.jpg' width=120/>
 </div>
 
 Aqui estão alguns dos recursos incríveis do aplicativo:
