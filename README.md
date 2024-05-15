@@ -2,8 +2,8 @@
 Com o objetivo de tornar o controle financeiro mais fácil e intuitivo, desenvolvi um aplicativo que utiliza o Firebase como banco de dados para garantir segurança e eficiência.
 
 <div>
-  <img  width=100 src='https://ibb.co/YQL43W1'/>
-  <img src='https://github.com/jotta2021/weatherApp24/blob/master/Imagem%20do%20WhatsApp%20de%202024-02-11%20%C3%A0(s)%2012.13.26_2c093b77.jpg?raw=true' width=100 
+  <img  src='https://ibb.co/YQL43W1' width=100/>
+  <img src='https://github.com/jotta2021/weatherApp24/blob/master/Imagem%20do%20WhatsApp%20de%202024-02-11%20%C3%A0(s)%2012.13.26_2c093b77.jpg?raw=true' width=100/> 
     <img src='https://ibb.co/YQL43W1'/>
     <img src=''/>
     <img src=''/>
